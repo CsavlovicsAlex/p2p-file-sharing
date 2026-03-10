@@ -1,0 +1,36 @@
+STEP 1: connecting to the server and requesting a file
+        client - server (through TCP)
+    part 1: client sends the files to the server
+        the client sends an uint16_t representing the listening port
+        the client sends an uint32_t to the server representing the length of the char array that is going to be sent next.
+        the client sends a char array of the before-mentioned size representing the names of the files, separated by
+            a \0. The array itself ends with \0\0
+
+    part 2: client asks for a file
+        the client sends an uint16_t to the server representing the message type (MSG_REQUEST_FILE)
+        the client sends an uint32_t to the server representing the length of the char array that is going to be sent next (including the null terminator \0).
+        the client sends a char array of the before-mentioned size representing the name of the file, ending in a \0
+
+    part 3: server responds with the list of IPs that have that file
+        the server sends an uint32_t to the client representing the size of the buffer (in bytes) which will contain all the peers. If the number is 0 this means
+            that no peers were found and the next step will be ignored
+        the server sends the information regarding the peers in the following format:
+            [uint32_t number_of_peers]
+                [uint32_t ip_length][ip_length bytes representing the IP address][uint16_t port]    - for the first peer
+                [uint32_t ip_length][ip_length bytes representing the IP address][uint16_t port]    - for the second peer and so on
+
+STEP 2: connecting to a client to download a file
+        client - client; client - server (through TCP)
+    part 1: client asks a peer for a file
+        the client sends an uint32_t to the peer representing the length of the char array that is going to be sent next (including th null terminator \0). Lengths of
+            over 1024 will be rejected
+        the client sends a char array of the before-mentioned size representing the name of the file, ending in a \0
+
+    part 2: peer responds with the requested file
+        the peer sends an uint32_t representing the size of the file in bytes or 0 if it doesn't exist / operation is rejected. If 0 is sent the next steps are ignored
+        the peer sends the file in chunks of 4KB
+
+    part 3: client sends to the server the new file it has downloaded
+        the client sends an uint16_t to the server representing the message type (MSG_ANNOUNCE_FILE)
+        the client sends an uint32_t to the server representing the length of the char array that is going to be sent next (including the null terminator \0).
+        the client sends a char array of the before-mentioned size representing the name of the file, ending in a \0

@@ -1,0 +1,32 @@
+# executables
+*.out
+*.exe
+
+# build folders
+build/
+cmake-build-debug/
+cmake-build-release/
+
+# object files
+*.o
+*.obj
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+compile_commands.json
+
+# IDE files
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Linux
+*.log
+
+# Shared files
+client-data/
